@@ -7,8 +7,8 @@ CLASSES = 'data\\SegmentationClass'
 OBJECTS = 'data\\SegmentationObject'
 LABEL_MAP_PATH = 'data\\labelmap.txt'
 
-RANDOM_STATE = 42
+RANDOM_STATE = 0
 
-EPOCHS = 50
-LEARNING_RATE = 1e-4
+EPOCHS = 100
+LEARNING_RATE = 1e-5
 BATCH_SIZE = 2

@@ -40,7 +40,7 @@ df = pd.DataFrame.from_dict(dict_df)
 # Split data on train/test
 train, test = train_test_split(
     df,
-    train_size=.99,
+    train_size=.8,
     random_state=constants.RANDOM_STATE,
     shuffle=True
 )
@@ -82,6 +82,7 @@ class WeaponDataset(torch.utils.data.Dataset):
             labels = np.append(labels, label).astype(np.uint8)
 
         labels = [LABELS_DICT[label] for label in labels]
+        # labels = np.ones((number_of_objects,), dtype=np.int64)
         # Set up boxes
         boxes = []
         for i in range(number_of_objects):
@@ -121,36 +122,21 @@ class WeaponDataset(torch.utils.data.Dataset):
 
 train_transform = A.Compose(
     [
-        A.VerticalFlip(p=.5),
-        A.HorizontalFlip(p=.5),
-        A.RandomRotate90(p=.5),
-        A.RGBShift(p=.5),
-        # A.Blur(blur_limit=11, p=.2),
-        # A.CLAHE(p=.2),
-        # A.HueSaturationValue(hue_shift_limit=20, sat_shift_limit=50, val_shift_limit=50, p=.2),
-        # A.RandomGamma(p=.2),
-        # A.RandomBrightnessContrast(p=.2),
-        # A.InvertImg(p=.2),
-        # A.GaussNoise(p=.2),
-        # A.MotionBlur(blur_limit=30, p=.2),
-        # A.ColorJitter(brightness=.4, contrast=.3, saturation=0.6, hue=1.8, p=.2),
-        # A.Emboss(strength=(.9, 1.2), p=.2),
-        # A.Equalize(p=.2),
-        # A.GaussianBlur(p=.2),
-        # A.GlassBlur(p=.2),
-        # A.ISONoise(color_shift=(.07, .09), intensity=(.3, .8), p=.2),
-        # A.MedianBlur(blur_limit=11, p=.2),
-        # A.MultiplicativeNoise(p=.2),
-        # A.RandomFog(fog_coef_lower=.1, fog_coef_upper=.3, p=.2),
+        A.VerticalFlip(p=.2),
+        A.HorizontalFlip(p=.2),
+        A.RandomRotate90(p=.2),
+        A.Cutout(num_holes=16, p=.2),
+        A.RGBShift(p=.2),
+        A.RandomBrightnessContrast(p=.2),
         ToTensorV2(transpose_mask=True, p=1.)
     ],
-    bbox_params=A.BboxParams(format='pascal_voc', min_area=1, min_visibility=.5, label_fields=['bbox_classes'])
+    bbox_params=A.BboxParams(format='pascal_voc', min_area=1e4, min_visibility=.5, label_fields=['bbox_classes'])
 )
 test_transform = A.Compose(
     [
         ToTensorV2(transpose_mask=True)
     ],
-    bbox_params=A.BboxParams(format='pascal_voc', min_area=1, min_visibility=.5, label_fields=['bbox_classes'])
+    bbox_params=A.BboxParams(format='pascal_voc', min_area=1e4, min_visibility=.5, label_fields=['bbox_classes'])
 )
 train_dataset = WeaponDataset(
     train, train_transform
